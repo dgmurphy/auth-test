@@ -1,0 +1,135 @@
+import React from 'react';
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <div> 
+        <h1>Auth Test App </h1>
+      </div>
+      <br />
+      <h2>GET Request: </h2>
+        <GetRequestForm />      
+      <h2>POST Request: </h2>
+        <PostRequestForm />
+    </div>
+  );
+}
+
+
+
+class GetRequestForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      url: 'https://dog.ceo/api/breeds/list/all',
+      resp: 'No response yet'
+    };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({url: event.target.value});
+  }
+
+  handleSubmit(event) {
+
+    var xhr = new XMLHttpRequest()
+
+    // get a callback when the server responds
+    xhr.addEventListener('load', () => {
+      // update the state of the component with the result here
+      
+      var response = xhr.responseText
+      console.log(response)
+      this.setState({resp: response})
+    })
+    
+    // open the request with the verb and the url
+    xhr.open('GET', this.state.url)
+    // send the request
+    xhr.send()
+
+    
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <div>
+        <form onSubmit={this.handleSubmit}>
+            
+          <textarea rows="5" cols="50" value={this.state.url} onChange={this.handleChange} />
+          <div>
+            <input type="submit" value="Submit" />
+          </div>
+        </form>
+        <div>
+          <h2> Response: </h2>
+          {this.state.resp}
+        </div>
+      </div>
+    );
+  }
+}
+
+class PostRequestForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      url: 'https://dog.ceo/api/breeds/list/all',
+      resp: 'No response yet'
+    };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({url: event.target.value});
+  }
+
+  handleSubmit(event) {
+
+    var xhr = new XMLHttpRequest()
+
+    // get a callback when the server responds
+    xhr.addEventListener('load', () => {
+      // update the state of the component with the result here
+      
+      var response = xhr.responseText
+      console.log(response)
+      this.setState({resp: response})
+    })
+    
+    // open the request with the verb and the url
+    xhr.open('GET', this.state.url)
+    // send the request
+    xhr.send()
+
+    
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <div>
+        <form onSubmit={this.handleSubmit}>
+            
+          <textarea rows="5" cols="50" value={this.state.url} onChange={this.handleChange} />
+          <div>
+            <input type="submit" value="POST" />
+          </div>
+        </form>
+        <div>
+          <h2> Response: </h2>
+          {this.state.resp}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default App;
