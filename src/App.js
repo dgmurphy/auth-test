@@ -33,8 +33,9 @@ class GetRequestForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      url: "https://dog.ceo/api/breeds/list/all?name=bruno",
-      resp: 'No response yet'
+      url: "https://sts.tradoc.army.mil/adfs/oauth2/authorize?response_type=id_token&scope=openid&client_id=c603cd5b-fc77-441f-8156-ba8adc29f83b&state=QeSNiWqq6s0wwfDDrjBpxhlkGws&redirect_uri=https%3A%2F%2Foedata.tradoc.army.mil%2Fsecure%2Fredirect_uri&nonce=2qwPs4sWKUGjrt89CP3zCBe-uH1Jg-Oc0dWPTquAm5Y&response_mode=form_post&client-request-id=696d9edc-2af7-4f91-7902-0080000000fa&RedirectToIdentityProvider=AD+AUTHORITY\r\n",
+      resp: 'No response yet',
+      resp_headers: 'no headers'
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -59,13 +60,16 @@ class GetRequestForm extends React.Component {
 
     var self = this 
     axios.get(url,
-      { headers: {
-        'Content-Type': 'application/json'
-        } 
+      { 
+        headers: {
+          'Content-Type': 'application/json'
+          },
+        withCredentials: false
       }
      ).then(function (response) {
       console.log(response.data)
       self.setState({resp: JSON.stringify(response.data)})
+      self.setState({resp_headers: JSON.stringify(response.headers)})
      })
     .catch(function (error) {
       // handle error
@@ -81,7 +85,7 @@ class GetRequestForm extends React.Component {
       <div>
         <form onSubmit={this.handleSubmit}>
             
-          <textarea rows="5" cols="80" value={this.state.url} onChange={this.handleChange} />
+          <textarea rows="8" cols="80" value={this.state.url} onChange={this.handleChange} />
           <div>
             <input type="submit" value="Submit" />
           </div>
@@ -89,6 +93,8 @@ class GetRequestForm extends React.Component {
         <div>
           <h2> Response: </h2>
           {this.state.resp}
+          <h2> Headers: </h2>
+          {this.state.resp_headers}
         </div>
       </div>
     );
@@ -102,8 +108,8 @@ class PostRequestForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      url: "https://example.com",
-      data: "name: value,\nname2: value2",
+      url: "https://sts.tradoc.army.mil/adfs/oauth2/authorize?response_type=id_token&scope=openid&client_id=c603cd5b-fc77-441f-8156-ba8adc29f83b&state=QeSNiWqq6s0wwfDDrjBpxhlkGws&redirect_uri=https%3A%2F%2Foedata.tradoc.army.mil%2Fsecure%2Fredirect_uri&nonce=2qwPs4sWKUGjrt89CP3zCBe-uH1Jg-Oc0dWPTquAm5Y&response_mode=form_post&client-request-id=696d9edc-2af7-4f91-7902-0080000000fa&RedirectToIdentityProvider=AD+AUTHORITY\r\n",
+      data: '{\n"name": "value",\n"name2": "value2"\n}',
       resp: 'No response yet'
     };
 
@@ -132,22 +138,23 @@ class PostRequestForm extends React.Component {
 
   getDataAxios(url){
 
-    console.log(this.state.data)
-
     var self = this 
 
+    var body = this.state.data.replace(/(\r\n|\n|\r)/gm, "")
+
+    var jsonBody = JSON.parse(body)
+    console.log(jsonBody)
+
     const headers = {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json; charset=utf-8',
+      "accept": "*/*"
     }
 
     axios({
       method: 'post',
       url: 'https://postman-echo.com/post',
       headers: headers,
-      data: {
-        firstName: 'Fred',
-        lastName: 'Flintstone'
-      }
+      data: jsonBody
      }).then(function (response) {
       console.log(response.data)
       self.setState({resp: JSON.stringify(response.data)})
@@ -166,9 +173,9 @@ class PostRequestForm extends React.Component {
       <div>
         <form onSubmit={this.handleSubmit}>
             
-          <textarea id="url" rows="2" cols="80" value={this.state.url} onChange={this.handleUrlChange} />
+          <textarea id="url" rows="8" cols="80" value={this.state.url} onChange={this.handleUrlChange} />
           <p>Data:</p>
-          <textarea id="data" rows="5" cols="80" value={this.state.data} onChange={this.handleDataChange} />
+          <textarea id="data" rows="8" cols="80" value={this.state.data} onChange={this.handleDataChange} />
           <div>
             <input type="submit" value="Submit" />
           </div>
